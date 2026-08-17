@@ -1,4 +1,4 @@
-<title>철강 일본어 트레이닝 v2</title>
+<title>스틸링고 트레이닝</title>
 <style>
 @font-face { font-family: "NotoSansJP"; src: url(data:font/woff2;base64,__NJP400__) format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
 @font-face { font-family: "NotoSansJP"; src: url(data:font/woff2;base64,__NJP700__) format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
@@ -63,9 +63,17 @@ mark.hl {
 
 /* ── masthead ─────────────────────────────── */
 .masthead { padding: 44px 0 22px; border-bottom: 1px solid var(--line); }
-.eyebrow { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; margin: 0 0 12px; }
-.masthead h1 { font-family: var(--mincho); font-size: clamp(30px, 5.2vw, 42px); line-height: 1.25; font-weight: 400; margin: 0; text-wrap: balance; letter-spacing: .01em; }
-.masthead p { color: var(--ink-2); margin: 14px 0 0; max-width: 60ch; font-size: 15px; }
+.brand { display: flex; align-items: center; gap: 16px; }
+.logo { width: clamp(52px, 9vw, 66px); height: auto; flex: 0 0 auto; overflow: visible; }
+.lg-body   { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2.6; }
+.lg-edge   { stroke: var(--accent); stroke-width: 2.6; stroke-linecap: round; }
+.lg-face   { fill: var(--surface); stroke: var(--accent); stroke-width: 2.6; }
+.lg-spiral { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linecap: round; }
+.lg-eye    { fill: var(--accent); }
+.lg-smile  { fill: none; stroke: var(--accent); stroke-width: 2.3; stroke-linecap: round; }
+.lg-cheek  { fill: var(--ember); opacity: .4; }
+.masthead h1 { font-family: var(--mincho); font-size: clamp(28px, 5.2vw, 42px); line-height: 1.2; font-weight: 400; margin: 0; text-wrap: balance; letter-spacing: .01em; }
+.masthead p { color: var(--ink-2); margin: 16px 0 0; max-width: 60ch; font-size: 15px; }
 
 /* ── bar ──────────────────────────────────── */
 .bar {
@@ -377,9 +385,24 @@ footer { margin-top: 60px; padding-top: 22px; border-top: 1px solid var(--line);
 
 <div class="wrap">
   <div class="masthead">
-    <p class="eyebrow">POSCO 수출팀 · 대일 영업 실무</p>
-    <h1>철강 실무 일본어 트레이닝</h1>
-    <p>일본계 자동차사·철강사를 상대할 때 실제로 오가는 일본어만 담았습니다. 하루 20분.</p>
+    <div class="brand">
+      <!-- 스틸링고 — 옆에서 본 강판 코일 -->
+      <svg class="logo" viewBox="0 0 76 58" role="img" aria-label="스틸링고 로고">
+        <ellipse cx="56" cy="29" rx="10" ry="19" class="lg-body"/>
+        <rect x="20" y="10" width="36" height="38" class="lg-body"/>
+        <line x1="20" y1="10" x2="56" y2="10" class="lg-edge"/>
+        <line x1="20" y1="48" x2="56" y2="48" class="lg-edge"/>
+        <ellipse cx="20" cy="29" rx="10" ry="19" class="lg-face"/>
+        <path d="M20 16 a7 13 0 1 1 -6.2 12.6 a4.2 7.6 0 1 0 6.2 -6.6" class="lg-spiral"/>
+        <circle cx="36" cy="26" r="2.7" class="lg-eye"/>
+        <circle cx="47" cy="26" r="2.7" class="lg-eye"/>
+        <path d="M37.5 34.5 q4 3.6 8 0" class="lg-smile"/>
+        <ellipse cx="31" cy="33" rx="2.8" ry="1.9" class="lg-cheek"/>
+        <ellipse cx="52" cy="33" rx="2.8" ry="1.9" class="lg-cheek"/>
+      </svg>
+      <h1>스틸링고 트레이닝</h1>
+    </div>
+    <p>일본 철강 비즈니스에서 실제로 오가는 일본어만 담았습니다. 하루 20분.</p>
   </div>
   <div id="app"></div>
   <footer>
