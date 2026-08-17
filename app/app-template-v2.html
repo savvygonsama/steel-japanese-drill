@@ -330,10 +330,17 @@ body.no-ko .sent-ko, body.no-ko .turn-ko, body.no-ko .line-ko { display: none; }
   display: none; margin-top: 4px; padding: 14px 16px; border: 1px dashed var(--line-strong);
   border-radius: 10px; text-align: center; font-size: 13.5px; color: var(--ink-3); cursor: pointer;
 }
-body.mask .turn.me .turn-jp, body.mask .turn.me .turn-ko { display: none; }
-body.mask .turn.me .cover { display: block; }
-body.mask .turn.me.open .turn-jp, body.mask .turn.me.open .turn-ko { display: block; }
+/* 가릴 때 일본어만 감춘다. 한국어는 남겨야 "이걸 일본어로 어떻게
+   말하지?" 하고 스스로 만들어보는 연습이 된다. */
+body.mask .turn.me .bubble { display: flex; flex-direction: column; }
+body.mask .turn.me .turn-head { order: 0; }
+body.mask .turn.me .turn-ko { order: 1; margin-top: 0; color: var(--ink); font-size: 15px; }
+body.mask .turn.me .cover { order: 2; }
+body.mask .turn.me .turn-jp { display: none; order: 3; }
+body.mask .turn.me.open .turn-jp { display: block; margin-top: 10px; }
 body.mask .turn.me.open .cover { display: none; }
+/* 해석을 꺼둔 상태에서도 가리기 모드에서는 한국어가 보여야 한다 */
+body.mask.no-ko .turn.me .turn-ko { display: block; }
 
 /* ── 작문 입력 ────────────────────────────── */
 .wr { margin-top: 12px; display: flex; gap: 8px; align-items: stretch; flex-wrap: wrap; }
@@ -1505,7 +1512,7 @@ function renderDay(d) {
         <div class="who">${t.me ? "나<br>POSCO" : "담당자<br>고객"}</div>
         <div class="bubble">
           <div class="turn-head">${spk(t.jp)}<span style="font-size:11px;color:var(--ink-3)">${i + 1}턴</span></div>
-          ${t.me ? `<div class="cover">🤔 뭐라고 답할지 떠올린 뒤 눌러서 확인</div>` : ""}
+          ${t.me ? `<div class="cover">🤔 이 말을 일본어로 어떻게? &nbsp;·&nbsp; 눌러서 확인</div>` : ""}
           <div class="turn-jp jp">${rubify(t.jp)}</div>
           <div class="turn-ko">${t.ko}</div>
         </div>
@@ -1545,7 +1552,7 @@ function renderDay(d) {
       ${article}
     </section>
     <section>
-      <div class="shead"><span class="emoji">🤝</span><h3>상담 회화</h3><span class="hint">오늘 용어 6개가 다시 등장</span></div>
+      <div class="shead"><span class="emoji">🤝</span><h3>상담 회화</h3><span class="hint">오늘 용어가 다시 등장<br>위 <b>내 대사 가리기</b>로 작문 연습</span></div>
       ${dialogue}
     </section>
     <section>
