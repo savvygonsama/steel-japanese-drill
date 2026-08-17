@@ -379,9 +379,10 @@ footer { margin-top: 60px; padding-top: 22px; border-top: 1px solid var(--line);
 </div>
 
 <div id="ttsNote" hidden>
-  <h5>🔇 이 기기에 일본어 음성이 없습니다</h5>
-  <p><b>Windows</b> — 설정 → 시간 및 언어 → 언어 및 지역 → 언어 추가 → <b>日本語</b> 선택 → 설치할 때 <b>음성</b> 항목 체크. 설치 후 브라우저를 다시 켜면 들립니다.</p>
-  <p><b>휴대폰</b> — 아이폰은 대부분 바로 됩니다. 안드로이드는 설정에서 Google 음성 서비스의 일본어를 내려받으면 됩니다.</p>
+  <h5>🔇 소리를 재생하지 못했습니다</h5>
+  <p><b>Windows</b> — 설정 → 시간 및 언어 → 언어 및 지역 → 언어 추가 → <b>日本語</b> → 설치할 때 <b>음성</b> 항목 체크. 설치 후 브라우저를 완전히 껐다 켜야 인식됩니다.</p>
+  <p><b>휴대폰</b> — 아이폰은 대부분 바로 됩니다. 안드로이드는 Google 음성 서비스에서 일본어를 내려받으면 됩니다.</p>
+  <p><b>링크로 열면 브라우저가 소리를 막는 경우가 있습니다.</b> 바탕화면에 저장된 파일 쪽에서는 재생되는 경우가 많으니 그쪽으로도 시도해 보세요.</p>
   <button id="ttsClose">알겠습니다</button>
 </div>
 
@@ -1281,6 +1282,7 @@ function findJa() {
 if ("speechSynthesis" in window) { speechSynthesis.onvoiceschanged = () => {}; speechSynthesis.getVoices(); }
 
 let speakingBtn = null;
+
 function speak(text, btn) {
   const v = findJa();
   if (v === undefined || v === null) { document.getElementById("ttsNote").hidden = false; return; }
@@ -1413,7 +1415,7 @@ function renderDay(d) {
         <span class="term-no">${String(i + 1).padStart(2, "0")}</span>
         <span class="term-jp jp">${t.jp}</span>
         <span class="term-kana jp">${t.kana}</span>
-        ${spk(t.jp)}
+        ${spk(t.kana && t.kana !== "―" ? t.kana : t.jp)}
         <span class="term-caret">▾</span>
       </div>
       <div class="term-prompt">👆 눌러서 뜻 확인</div>
