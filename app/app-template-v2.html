@@ -185,8 +185,18 @@ section { margin-bottom: 48px; }
 .term-body { margin-top: 11px; padding-top: 11px; border-top: 1px dashed var(--line); }
 .term-mean { font-weight: 700; font-size: 15px; }
 .term-note { font-size: 13.5px; color: var(--ink-2); margin-top: 5px; line-height: 1.7; }
-.term-where { font-size: 11.5px; color: var(--ink-3); margin-top: 8px; }
+.term-where { font-size: 11.5px; color: var(--ink-3); margin-top: 14px; }
 .term-prompt { font-size: 12px; color: var(--ink-3); margin-top: 9px; }
+.term-flag { font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+.term-flag.known { background: var(--good-soft); color: var(--good); }
+.term-flag.unsure { background: var(--bad-soft); color: var(--bad); }
+.term-ex { margin-top: 14px; padding: 14px 16px; background: var(--surface-2); border-radius: 10px; }
+.ex-cap { font-size: 11px; font-weight: 700; letter-spacing: .08em; color: var(--ink-3); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.term-ex .sent-jp { font-size: 18px; line-height: 2.3; }
+.term-ex .sent-ko { font-size: 14.5px; margin-top: 7px; color: var(--ink-2); }
+.term-ex .sent-tip { font-size: 13px; color: var(--ink-2); margin-top: 10px; padding-top: 9px; border-top: 1px dashed var(--line-strong); line-height: 1.7; }
+.smk-cap { font-size: 12px; color: var(--ink-3); align-self: center; margin-right: 4px; }
+.smk { align-items: center; flex-wrap: wrap; margin-top: 16px; padding-top: 13px; border-top: 1px dashed var(--line); }
 .term[aria-expanded="false"] .term-body { display: none; }
 .term[aria-expanded="true"] .term-prompt { display: none; }
 
@@ -1330,12 +1340,12 @@ function reviewData(d) {
 }
 
 function renderReview(d) {
-  if (d.no === 1) return `<div class="rev-empty">오늘이 첫날입니다.<br>내일부터 이 자리에서 어제 배운 것을 먼저 확인합니다.</div>`;
+  if (d.no === 1) return `<div class="rev-empty">오늘이 첫날입니다.<br>내일부터 이 자리에 <b>어제 배운 용어</b>와 <b>틀린 문제</b>가 먼저 올라옵니다.<br><br>용어 카드를 열면 맨 아래에 <b>「외웠어요 / 헷갈려요」</b> 버튼이 있습니다. 헷갈린다고 표시해 두면 외웠다고 바꿀 때까지 매일 복습에 따라옵니다.</div>`;
   const { terms, wrongs } = reviewData(d);
   if (!terms.length && !wrongs.length) return `<div class="rev-empty">복습할 것이 없습니다.</div>`;
 
   const tHtml = terms.length ? `
-    <p class="rev-lead">뜻을 떠올린 뒤 눌러 확인하세요. <b>붉은 선</b>은 전에 「헷갈려요」로 표시한 용어입니다.</p>
+    <p class="rev-lead">뜻을 떠올린 뒤 눌러 확인하세요. <b>붉은 선</b>은 용어 카드에서 직접 「헷갈려요」로 표시해 둔 것으로, 외웠다고 바꿀 때까지 계속 따라옵니다.</p>
     <div class="rev">${terms.map(r => `
       <div class="rv ${r.mark === "unsure" ? "flag" : ""}" role="button" tabindex="0" aria-expanded="false">
         <span><span class="rq jp">${r.t.jp}</span><br><span class="rk jp">${r.t.kana} · ${r.from}일차</span></span>
@@ -1407,8 +1417,15 @@ function renderHome() {
 
 /* ── STUDY ────────────────────────────────── */
 function renderDay(d) {
+  /* 용어와 예문을 한 카드에 묶는다.
+     예문은 그 용어를 연습하려고 만든 것이므로 떨어져 있을 이유가 없다.
+     sentences의 drill 값이 용어와 1:1로 대응하므로 그것으로 짝을 찾는다. */
+  const byDrill = {};
+  d.sentences.forEach(s => { byDrill[s.drill] = s; });
+
   const terms = d.terms.map((t, i) => {
     const sm = store.get(smKey(d.no, i), null);
+    const s = byDrill[t.jp] || d.sentences[i];
     return `
     <div class="term ${sm || ""}" data-ti="${i}" role="button" tabindex="0" aria-expanded="false">
       <div class="term-top">
@@ -1416,28 +1433,29 @@ function renderDay(d) {
         <span class="term-jp jp">${t.jp}</span>
         <span class="term-kana jp">${t.kana}</span>
         ${spk(t.kana && t.kana !== "―" ? t.kana : t.jp)}
+        ${sm ? `<span class="term-flag ${sm}">${sm === "known" ? "외웠어요" : "헷갈려요"}</span>` : ""}
         <span class="term-caret">▾</span>
       </div>
-      <div class="term-prompt">👆 눌러서 뜻 확인</div>
+      <div class="term-prompt">👆 눌러서 뜻과 예문 확인</div>
       <div class="term-body">
         <div class="term-mean">${t.mean}</div>
         <div class="term-note">${t.note}</div>
-        <div class="term-where">📍 오늘 등장하는 곳 — ${t.where}</div>
+        ${s ? `
+        <div class="term-ex">
+          <div class="ex-cap">이 용어가 쓰인 문장 ${spk(s.jp)}</div>
+          <div class="sent-jp jp">${rubify(s.jp)}</div>
+          <div class="sent-ko">${s.ko}</div>
+          <div class="sent-tip">${s.tip}</div>
+        </div>` : ""}
+        <div class="term-where">📍 오늘 또 나오는 곳 — ${t.where}</div>
         <div class="smk">
+          <span class="smk-cap">이 용어, 외우셨나요?</span>
           <button data-sm="known" class="${sm === "known" ? "on" : ""}">외웠어요</button>
           <button data-sm="unsure" class="${sm === "unsure" ? "on" : ""}">헷갈려요</button>
         </div>
       </div>
     </div>`;
   }).join("");
-
-  const sents = d.sentences.map((s, i) => `
-    <div class="sent">
-      <div class="sent-head"><span class="drill">${i + 1}. ${s.drill}</span>${spk(s.jp)}</div>
-      <div class="sent-jp jp">${rubify(s.jp)}</div>
-      <div class="sent-ko">${s.ko}</div>
-      <div class="sent-tip">${s.tip}</div>
-    </div>`).join("");
 
   const a = d.article;
   const article = `
@@ -1494,12 +1512,8 @@ function renderDay(d) {
       ${renderReview(d)}
     </section>
     <section>
-      <div class="shead"><span class="emoji">📌</span><h3>오늘의 용어</h3><span class="hint">🔊로 발음 확인<br>카드를 눌러 뜻 확인</span></div>
+      <div class="shead"><span class="emoji">📌</span><h3>오늘의 용어와 예문</h3><span class="hint">카드를 눌러 뜻·예문 확인<br>맨 아래에서 <b>외웠어요/헷갈려요</b> 표시</span></div>
       <div class="terms">${terms}</div>
-    </section>
-    <section>
-      <div class="shead"><span class="emoji">💬</span><h3>실무 예문</h3><span class="hint">용어 하나당 예문 하나<br><mark class="hl">형광펜</mark>이 오늘의 용어</span></div>
-      ${sents}
     </section>
     <section>
       <div class="shead"><span class="emoji">📰</span><h3>기사 독해</h3><span class="hint">표현표는 지문에 나온 것만</span></div>
@@ -1604,6 +1618,15 @@ document.addEventListener("click", e => {
     store.set(key, val);
     card.classList.remove("known", "unsure"); if (val) card.classList.add(val);
     card.querySelectorAll(".smk button").forEach(b => b.classList.toggle("on", val === b.dataset.sm));
+    // 접었을 때도 상태가 보이도록 머리말의 표시를 갱신한다
+    const old = card.querySelector(".term-flag");
+    if (old) old.remove();
+    if (val) {
+      const chip = document.createElement("span");
+      chip.className = "term-flag " + val;
+      chip.textContent = val === "known" ? "외웠어요" : "헷갈려요";
+      card.querySelector(".term-caret").before(chip);
+    }
     return;
   }
 
