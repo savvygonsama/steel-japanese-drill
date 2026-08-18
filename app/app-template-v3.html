@@ -102,7 +102,6 @@ html:not([data-theme="light"]) .lvcard .tagline, :root[data-theme="dark"] .lvcar
 }
 .lvchip:hover { border-color: var(--accent); color: var(--accent); }
 body.lv-easy .sw#sw-mask { display: none; }
-.lvcard.hard .tagline { background: var(--bad); }
 .art-ko.open .line-ko { display: block !important; }
 .pick { max-width: 620px; }
 
@@ -1406,10 +1405,10 @@ let quizState = {};
                객관식 퀴즈만. 후리가나와 해석은 항상 켜둔다.
    mid  중급 — 지금까지 만들어 온 그대로.
    고르지 않았으면 선택 화면을 먼저 보여준다. */
-let level = store.get("level", null);
+// 난이도는 저장하지 않는다. 열 때마다 오늘 어느 쪽으로 할지 고르게 한다.
+let level = null;
 const isEasy = () => level === "easy";
-const isHard = () => level === "hard";
-const LV_NAME = { easy: "초급", mid: "중급", hard: "상급" };
+const LV_NAME = { easy: "초급", mid: "중급" };
 
 function setSw(id, on, text) {
   const b = document.getElementById(id);
@@ -1419,10 +1418,9 @@ function setSw(id, on, text) {
 }
 
 function applyLevel(lv) {
-  level = lv; store.set("level", lv);
+  level = lv;
   document.body.classList.toggle("lv-easy", lv === "easy");
   document.body.classList.toggle("lv-mid", lv === "mid");
-  document.body.classList.toggle("lv-hard", lv === "hard");
 
   if (lv === "easy") {
     /* 초급은 보조를 전부 켠 채 고정한다. 끌 수 있게 두면 실수로 꺼서
@@ -1432,13 +1430,6 @@ function applyLevel(lv) {
     store.set("mask", false); document.body.classList.remove("mask");
     setSw("sw-furi", true, "후리가나 · 전부");
     setSw("sw-ko", true); setSw("sw-mask", false);
-  } else if (lv === "hard") {
-    /* 상급은 보조를 전부 끈 상태에서 시작한다. 필요하면 개별로 다시 켤 수 있다. */
-    furiMode = "off"; store.set("furi", "off");
-    store.set("ko", false); document.body.classList.add("no-ko");
-    store.set("mask", true); document.body.classList.add("mask");
-    setSw("sw-furi", false, "후리가나 · 끄기");
-    setSw("sw-ko", false); setSw("sw-mask", true);
   }
   const b = document.getElementById("lvBtn");
   if (b) b.textContent = "난이도 · " + (LV_NAME[lv] || "");
@@ -1472,19 +1463,8 @@ function renderPick() {
         </ul>
         <div class="sample jp">見積書[みつもりしょ]は明日中[あすじゅう]にお送[おく]りいたします。<span class="sk">견적서는 내일 중으로 보내드리겠습니다.</span></div>
       </button>
-      <button class="lvcard hard" data-lv="hard">
-        <h4>상급 <span class="tagline">혼자 읽고 말할 분</span></h4>
-        <p>중급과 같은 자료를 <b>보조 없이</b> 다룹니다. 읽는 법도 해석도 먼저 나오지 않습니다.</p>
-        <ul>
-          <li>후리가나·해석 없이 시작</li>
-          <li>기사 해석은 스스로 한 뒤 확인</li>
-          <li>회화 조각 없이 통째로 작문</li>
-          <li>필요하면 개별로 다시 켤 수 있음</li>
-        </ul>
-        <div class="sample jp">見積書は明日中にお送りいたします。<span class="sk">해석은 스스로 — 눌러야 나옵니다</span></div>
-      </button>
     </div>
-    <p class="lvnote">세 과정 모두 같은 자료이며, 배우는 용어도 같습니다.<br>초급 → 중급 → 상급으로 같은 내용을 세 번 도는 것이 가장 빠른 길입니다.</p>`;
+    <p class="lvnote">두 과정 모두 같은 자료이며, 배우는 용어도 같습니다.<br>초급을 한 바퀴 돈 뒤 중급으로 다시 오면, 아는 단어를 실무 문장으로 다시 만나게 됩니다.</p>`;
 }
 
 const smKey = (day, i) => `sm-${day}-${i}`;
@@ -1647,8 +1627,8 @@ function renderDay(d) {
       <div style="margin-top:6px;color:var(--ink-3)">${a.note}</div>
     </div>
     <div class="passage jp">${rubify(a.body)}</div>
-    ${isHard() ? `<button class="asm-all" data-reveal="art">먼저 스스로 해석한 뒤 눌러서 확인</button>` : ""}
-    <div class="art-ko" ${isHard() ? "hidden" : ""}>
+
+    <div class="art-ko">
       <div class="lines">${a.lines.map(l => `<div class="line"><div class="line-jp jp">${l.jp}</div><div class="line-ko">${l.ko}</div></div>`).join("")}</div>
       <div class="summary"><h4>요약</h4>${a.summary}</div>
     </div>
@@ -1661,7 +1641,7 @@ function renderDay(d) {
   const dialogue = `
     <div class="situation"><b>상황</b> · ${dg.situation}</div>
     ${(isEasy() ? dg.turns.slice(0, 4) : dg.turns).map((t, i) => {
-      const ch = (!isHard()) && t.me && t.ch && t.ch.length ? t.ch : null;
+      const ch = t.me && t.ch && t.ch.length ? t.ch : null;
       return `
       <div class="turn ${t.me ? "me" : ""} ${ch ? "chunked" : ""}">
         <div class="who">${t.me ? "나<br>POSCO" : "담당자<br>고객"}</div>
@@ -1785,7 +1765,7 @@ function paint() {
 document.addEventListener("click", e => {
   const lvc = e.target.closest(".lvcard");
   if (lvc) { applyLevel(lvc.dataset.lv); view = "home"; paint(); return; }
-  if (e.target.id === "lvBtn") { level = null; store.set("level", null); paint(); return; }
+  if (e.target.id === "lvBtn") { level = null; paint(); return; }
 
   const sp = e.target.closest(".speak");
   if (sp) { e.stopPropagation(); speak(sp.dataset.say, sp); return; }
@@ -1860,15 +1840,6 @@ document.addEventListener("click", e => {
     }
     return;
   }
-  /* 상급 — 기사 해석 열기 */
-  const rev = e.target.closest('[data-reveal="art"]');
-  if (rev) {
-    const box = rev.parentElement.querySelector(".art-ko");
-    box.hidden = false; box.classList.add("open");
-    rev.remove();
-    return;
-  }
-
   const asmAll = e.target.closest(".asm-all");
   if (asmAll) {
     const b = asmAll.closest(".bubble");
@@ -2034,6 +2005,6 @@ addEventListener("scroll", () => {
   document.getElementById("prog").style.width = (h > 0 ? (scrollY / h) * 100 : 0) + "%";
 }, { passive: true });
 
-if (level) applyLevel(level);
+
 paint();
 </script>
