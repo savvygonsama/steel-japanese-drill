@@ -423,7 +423,10 @@ html:not([data-theme="light"]) .wr button, :root[data-theme="dark"] .wr button {
 .done button { font: inherit; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 999px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink-2); cursor: pointer; transition: all .15s; }
 .done button[aria-pressed="true"] { background: var(--good-soft); border-color: var(--good); color: var(--good); }
 .done button.cheer { animation: pop .45s cubic-bezier(.34,1.56,.64,1); }
-footer { margin-top: 60px; padding-top: 22px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-3); text-align: center; line-height: 1.9; }
+footer { margin-top: 60px; padding-top: 26px; border-top: 1px solid var(--line); text-align: center; }
+footer .cr { font-family: var(--mincho); font-size: 15px; color: var(--ink-2); letter-spacing: .04em; }
+footer .cr-sub { font-size: 11.5px; color: var(--ink-3); letter-spacing: .06em; margin-top: 5px; }
+footer .fine { font-size: 11px; color: var(--ink-3); line-height: 2; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
 
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
 @media (prefers-reduced-motion: reduce) { *, #prog { transition: none !important; animation: none !important; } }
@@ -473,8 +476,13 @@ footer { margin-top: 60px; padding-top: 22px; border-top: 1px solid var(--line);
   </div>
   <div id="app"></div>
   <footer>
-    자료 문의는 수출팀장에게.<br>
-    학습 진도는 이 브라우저에만 저장됩니다. 다른 기기에서 열면 처음부터 시작합니다.
+    <div class="cr">© 2026 곤사마</div>
+    <div class="cr-sub">스틸링고 트레이닝 &middot; 기획·구성 곤사마</div>
+    <div class="fine">
+      학습 진도는 이 브라우저에만 저장됩니다. 다른 기기에서 열면 처음부터 시작합니다.<br>
+      기사 지문은 출처를 밝힌 실제 보도와 학습용 예시 지문을 구분해 표기합니다.<br>
+      글꼴 Noto Sans JP &middot; Zen Old Mincho &middot; Pretendard (SIL Open Font License 1.1)
+    </div>
   </footer>
 </div>
 
